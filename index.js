@@ -6,6 +6,7 @@
 to receive constant wake-up HTTPS requests from UptimeRobot */
 const keep_bot_alive = require("./keep_bot_alive.js")
 
+
 /* Create bot client using Discord.js */
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const client = new Client({
@@ -16,14 +17,15 @@ const client = new Client({
     ],
 });
 
+
 /* Load Discord Bot Token from environment variables (Secrets for Replit) */
 const token = process.env["DISCORD_BOT_SECRET"];
+
 
 /* Dynamically load commands */
 const fs = require('node:fs');
 const path = require('node:path');
 client.commands = new Collection();
-
 // Read in all command categories (folders)
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
@@ -47,6 +49,7 @@ for (const folder of commandFolders) {
 
 
 
+
 /*
     Bot Logics
 */
@@ -56,6 +59,7 @@ client.once(Events.ClientReady, c => {
     console.log("Faruzan senpai is awake!");
     console.log(`\tID: ${c.user.username}`);
 });
+
 
 // For each interaction event
 client.on(Events.InteractionCreate, interaction => {
@@ -83,7 +87,6 @@ client.on(Events.InteractionCreate, interaction => {
 })
 
 
-
 // For each new message in the server
 client.on("messageCreate", (msg) => {
     console.log(`Detected message: \n\t${msg.author.username} : <${msg.author.id}>\n\t"${msg.content}"`)
@@ -94,6 +97,7 @@ client.on("messageCreate", (msg) => {
         }
     }
 });
+
 
 // Log in bot to Discord
 client.login(token);
