@@ -1,0 +1,24 @@
+{
+  "files": {
+    "app.js": [
+      {
+        "id": "3d4ab696-c5d3-4296-985b-4643a4e6e673",
+        "line": 27,
+        "version": 56,
+        "index": 892
+      },
+      {
+        "id": "c7621663-aef5-4e99-963d-7d3be36e2a24",
+        "line": 35,
+        "version": 56,
+        "index": 1144
+      },
+      {
+        "id": "65a62dd3-ba64-433b-b75c-2d2ebd834f97",
+        "line": 67,
+        "version": 56,
+        "index": 2029
+      }
+    ]
+  }
+}
