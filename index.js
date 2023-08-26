@@ -18,7 +18,9 @@ client.on("messageCreate", (msg) => {
   console.log(`Detected message: \n\t${msg.author.username} : <${msg.author.id}>\n\t"${msg.content}"`)
   if (msg.author.id != client.user.id) {
     // msg.channel.send(msg.content.split("").reverse().join(""));
-    msg.channel.send(`先叫声前辈听听吧~`);
+    if (msg.author.id === msg.author.id) {
+      msg.channel.send(`先叫声前辈听听吧~`);
+    }
   }
 });
 
