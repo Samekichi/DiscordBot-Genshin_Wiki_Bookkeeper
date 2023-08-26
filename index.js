@@ -1,3 +1,5 @@
+const keep_bot_alive = require("./keep_bot_alive.js")
+
 const { Client, GatewayIntentBits } = require('discord.js');
 const client = new Client({
   intents: [
@@ -10,8 +12,8 @@ const client = new Client({
 const token = process.env["DISCORD_BOT_SECRET"];
 
 client.on("ready", () => {
-  console.log("I'm in");
-  console.log(client.user.username);
+  console.log("Faruzan senpai is awake!");
+  console.log(`\tID: ${client.user.username}`);
 });
 
 client.on("messageCreate", (msg) => {
