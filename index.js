@@ -34,7 +34,7 @@ for (const folder of commandFolders) {
     const commandsPath = path.join(foldersPath, folder);
     const commandsFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
     // Load all valid commands into bot client
-    for (const file of commandFiles) {
+    for (const file of commandsFiles) {
         const filePath = path.join(commandsPath, file);
         const command = require(filePath);
         // Set a new item in the Collection with the key as the command name
@@ -62,7 +62,7 @@ client.once(Events.ClientReady, c => {
 
 
 // For each interaction event
-client.on(Events.InteractionCreate, interaction => {
+client.on(Events.InteractionCreate, async interaction => {
     // Exclude non-slash commands (e.g., MessageComponent interactions)
     if (!interaction.isChatInputCommand()) return;
     // Handler
@@ -89,11 +89,13 @@ client.on(Events.InteractionCreate, interaction => {
 
 // For each new message in the server
 client.on("messageCreate", (msg) => {
-    console.log(`Detected message: \n\t${msg.author.username} : <${msg.author.id}>\n\t"${msg.content}"`)
     if (msg.author.id != client.user.id) {
+        console.log(`\n==== Message Detected ====
+                    \n\t${msg.author.username} : <${msg.author.id}>
+                    \n\t"${msg.content}"`)
         // msg.channel.send(msg.content.split("").reverse().join(""));
-        if (msg.author.id === process.env[MY_USR_ID]) {
-            msg.channel.send(`先叫声前辈听听吧~`);
+        if (msg.author.id === process.env["MY_USR_ID"]) {
+            // msg.channel.send(`先叫声前辈听听吧~`);
         }
     }
 });
