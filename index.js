@@ -63,16 +63,29 @@ client.once(Events.ClientReady, c => {
 
 // For each interaction event
 client.on(Events.InteractionCreate, async interaction => {
+    
     // Exclude non-slash commands (e.g., MessageComponent interactions)
     if (!interaction.isChatInputCommand()) return;
+    
     // Handler
     console.log(interaction);
-    const command = interaction.client.commands.get(interaction.commandName);
+    const command = client.commands.get(interaction.commandName);
+    
     // Exclude undefined commands
     if (!command) {
         console.error(`No command matching ${interaction.commandName} was found.`);
         return
     }
+    
+    // Exclude commands still cooling down
+    // const { cooldowns } = client;  // Collection `cooldowns`: { <Key> = command name : <Value> = Collections associating user's id (key) -> last time this user used that command (value) }
+    // if ( !cooldowns.has(command.data.name) ) {  // command never used before
+    //     cooldowns.set(command.data.name, new Collection());
+    // }
+    // const now = Date.now()
+    
+    
+    
     // Execute response to command
     try {
         await command.execute(interaction);

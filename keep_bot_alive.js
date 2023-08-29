@@ -3,7 +3,7 @@ var http = require("http");
 function startServer() {
     try {
         http
-            .createServer(function(req, res) {
+            .createServer(function(req, res)             {
                 res.write("Bot server up!");
                 res.end();
             })
