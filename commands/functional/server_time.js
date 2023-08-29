@@ -30,8 +30,7 @@ module.exports = {
         const pickedServer = interaction.options.getString('server');
         const tzCode = serverTzCodes.get(pickedServer);
         // 
-        const date = moment().tz(tzCode).format('MMMM Do YYYY, h\h:mm:ss a');
-
+        const date = moment().tz(tzCode).format('HH:mm:ss, MM/DD (ddd), yyyy');
         await interaction.reply(`Local ${pickedServer.toUpperCase()} server time is ${date}.`);
     }
 }
