@@ -29,8 +29,23 @@ module.exports = {
         // Get the selected time zone
         const pickedServer = interaction.options.getString('server');
         const tzCode = serverTzCodes.get(pickedServer);
-        // 
-        const date = moment().tz(tzCode).format('HH:mm:ss, MM/DD (ddd), yyyy');
-        await interaction.reply(`Local ${pickedServer.toUpperCase()} server time is ${date}.`);
+        // Get local time
+        const now = moment.tz(tzCode)
+        // Get local time of next game day
+        let next4AM;
+        if (now.hour() < 4) {  // get today's 4 a.m. 
+            next4AM = now.clone().startOf('day').add(4, 'hours');
+        } else {  // get tommorrow's 4 a.m.
+            next4AM = now.clone().add(1, 'days').startOf('day').add(4, 'hours');
+        }
+        // Compute the remaining time to the next game day
+        const remainingMilliseconds = next4AM.diff(now);
+        const remainingSeconds = Math.floor(remainingMilliseconds / 1000);
+        const sec = remainingSeconds % 60;
+        const min = (remainingSeconds - sec) / 60 % 60;
+        const hr = Math.floor(remainingSeconds - sec - min * 60) % 3600;
+        // Reply with formatted local time
+        const formattedNow = now.format('HH:mm:ss, MM/DD (ddd), yyyy');
+        await interaction.reply(`- Local ${pickedServer.toUpperCase()} server time is ${formattedNow}.\n- Next game day in ${hr}:${min}:${sec}.`);
     }
 }
