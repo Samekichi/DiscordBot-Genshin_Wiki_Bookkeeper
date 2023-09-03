@@ -2,9 +2,17 @@
     Dependencies & Credentials
 */
 
+
+
 /* Host a server that listens to port 8080
 to receive constant wake-up HTTPS requests from UptimeRobot */
-const keep_bot_alive = require("./keep_bot_alive.js")
+const keep_bot_alive = require("./keep_bot_alive.js");
+
+
+/* Maintain a Replit database to store permanent data */
+const db = require("./database.js");
+console.log(process.env['REPLIT_DB_URL']);
+db.list().then(keys => { console.log(keys) });
 
 
 /* Create bot client using Discord.js */
@@ -47,7 +55,9 @@ for (const folder of commandFolders) {
     }
 }
 
+/* Initialize a collection to store command cooldowns per user */
 client.cooldowns = new Collection();
+
 
 
 
@@ -70,7 +80,7 @@ client.on(Events.InteractionCreate, async interaction => {
     // Exclude non-slash commands (e.g., MessageComponent interactions)
     if (!interaction.isChatInputCommand()) return;
 
-    // Handler
+    // Start handle
     console.log(interaction);
     const command = client.commands.get(interaction.commandName);
 
@@ -82,7 +92,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
     // Exclude commands still cooling down
     const { cooldowns } = client;  // Collection `cooldowns`: { <Key> = command name : <Value> = Collections associating user's id (key) -> last time this user used that command (value) }
-    
+
     if (!cooldowns.has(command.data.name)) {  // command never used before
         cooldowns.set(command.data.name, new Collection());
     }
@@ -106,11 +116,22 @@ client.on(Events.InteractionCreate, async interaction => {
     timestamps.set(interaction.user.id, now);
     setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount)
 
-    
+
     // Execute response to command
     try {
+
+        // execution
         await command.execute(interaction);
+        // database log
+        const globalName = interaction.user.globalName;
+        const key = `${globalName}.slashCommandCount`
+        let count = await db.get(key) || 0;
+        console.log(await db.get(key));
+        count += 1;
+        await db.set(key, count);
+
     } catch (error) {
+
         console.error(error);
         if (interaction.replied || interaction.deferred) {
             await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
@@ -118,21 +139,22 @@ client.on(Events.InteractionCreate, async interaction => {
             await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
         }
     }
+
 })
 
 
 // For each new message in the server
-client.on("messageCreate", (msg) => {
-    if (msg.author.id != client.user.id) {
-        console.log(`\n==== Message Detected ====
-                    \n\t${msg.author.username} : <${msg.author.id}>
-                    \n\t"${msg.content}"`)
-        // msg.channel.send(msg.content.split("").reverse().join(""));
-        if (msg.author.id === process.env["MY_USR_ID"]) {
-            // msg.channel.send(`先叫声前辈听听吧~`);
-        }
-    }
-});
+// client.on("messageCreate", (msg) => {
+//     if (msg.author.id != client.user.id) {
+//         console.log(`\n==== Message Detected ====
+//                     \n\t${msg.author.username} : <${msg.author.id}>
+//                     \n\t"${msg.content}"`)
+//         // msg.channel.send(msg.content.split("").reverse().join(""));
+//         if (msg.author.id === process.env["MY_USR_ID"]) {
+//             // msg.channel.send(`先叫声前辈听听吧~`);
+//         }
+//     }
+// });
 
 
 // Log in bot to Discord

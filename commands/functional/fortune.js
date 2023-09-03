@@ -21,7 +21,7 @@ module.exports = {
         // Generate random index
         const fortuneIndex = generateRandomIndex(username, intDate, numFortunes);
 
-        await interaction.reply(`Dear **${interaction.user.globalName}**, your today's fortune is **\`${fortunes[fortuneIndex]}\`**.`);
+        await interaction.reply(`**${interaction.user.globalName}**，你的今日运势为**\`${fortunes[fortuneIndex]}\`**。${/吉/.test(fortunes[fortuneIndex]) ? "GLHF！" : "需要智慧与美貌兼具的神子大人为你驱驱邪么w"}`);
     }
 }
 
