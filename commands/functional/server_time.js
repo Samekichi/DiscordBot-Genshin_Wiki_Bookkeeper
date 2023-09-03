@@ -31,7 +31,7 @@ module.exports = {
         const tzCode = serverTzCodes.get(pickedServer);
         // Get local time
         const now = moment.tz(tzCode)
-        // Get local time of next game day
+        // Get local time of next game day (4 a.m.)
         let next4AM;
         if (now.hour() < 4) {  // get today's 4 a.m. 
             next4AM = now.clone().startOf('day').add(4, 'hours');
@@ -46,6 +46,6 @@ module.exports = {
         const hr = Math.floor((remainingSeconds - sec - min * 60) / 3600);
         // Reply with formatted local time
         const formattedNow = now.format('HH:mm:ss, MM/DD (ddd), yyyy');
-        await interaction.reply(`- Local ${pickedServer.toUpperCase()} server time is ${formattedNow}.\n- Next game day in ${hr > 0 ? `${hr} hour${hr > 1 ? "s" : ""} ` : ""} ${min > 0 ? `${min} minute${min > 1 ? "s" : ""} ` : ""} ${sec} second${sec > 1 ? "s" : ""}`);
+        await interaction.reply(`- Local ${pickedServer.toUpperCase()} server time is ${formattedNow}.\n- Next game day in ${hr > 0 ? `${hr} hour${hr > 1 ? "s " : " "} ` : ""}${min > 0 ? `${min} minute${min > 1 ? "s " : " "} ` : ""}${sec} second${sec > 1 ? "s" : ""}`);
     }
 }
