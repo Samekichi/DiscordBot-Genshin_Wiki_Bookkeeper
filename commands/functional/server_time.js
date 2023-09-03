@@ -2,7 +2,7 @@ const { SlashCommandBuilder, Collection } = require('discord.js');
 const moment = require('moment-timezone');
 
 module.exports = {
-    // cooldown: 5,
+    cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('server_time')
         .setDescription('Shows the selected server\'s local time.')
@@ -43,9 +43,9 @@ module.exports = {
         const remainingSeconds = Math.floor(remainingMilliseconds / 1000);
         const sec = remainingSeconds % 60;
         const min = (remainingSeconds - sec) / 60 % 60;
-        const hr = Math.floor(remainingSeconds - sec - min * 60) % 3600;
+        const hr = Math.floor((remainingSeconds - sec - min * 60) / 3600);
         // Reply with formatted local time
         const formattedNow = now.format('HH:mm:ss, MM/DD (ddd), yyyy');
-        await interaction.reply(`- Local ${pickedServer.toUpperCase()} server time is ${formattedNow}.\n- Next game day in ${hr}:${min}:${sec}.`);
+        await interaction.reply(`- Local ${pickedServer.toUpperCase()} server time is ${formattedNow}.\n- Next game day in ${hr > 0 ? `${hr} hour${hr > 1 ? "s" : ""} ` : ""} ${min > 0 ? `${min} minute${min > 1 ? "s" : ""} ` : ""} ${sec} second${sec > 1 ? "s" : ""}`);
     }
 }

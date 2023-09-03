@@ -47,12 +47,15 @@ for (const folder of commandFolders) {
     }
 }
 
+client.cooldowns = new Collection();
 
 
 
 /*
     Bot Logics
 */
+
+
 
 // On bot startup
 client.once(Events.ClientReady, c => {
@@ -63,28 +66,46 @@ client.once(Events.ClientReady, c => {
 
 // For each interaction event
 client.on(Events.InteractionCreate, async interaction => {
-    
+
     // Exclude non-slash commands (e.g., MessageComponent interactions)
     if (!interaction.isChatInputCommand()) return;
-    
+
     // Handler
     console.log(interaction);
     const command = client.commands.get(interaction.commandName);
-    
+
     // Exclude undefined commands
     if (!command) {
         console.error(`No command matching ${interaction.commandName} was found.`);
         return
     }
-    
+
     // Exclude commands still cooling down
-    // const { cooldowns } = client;  // Collection `cooldowns`: { <Key> = command name : <Value> = Collections associating user's id (key) -> last time this user used that command (value) }
-    // if ( !cooldowns.has(command.data.name) ) {  // command never used before
-    //     cooldowns.set(command.data.name, new Collection());
-    // }
-    // const now = Date.now()
+    const { cooldowns } = client;  // Collection `cooldowns`: { <Key> = command name : <Value> = Collections associating user's id (key) -> last time this user used that command (value) }
     
-    
+    if (!cooldowns.has(command.data.name)) {  // command never used before
+        cooldowns.set(command.data.name, new Collection());
+    }
+
+    const now = Date.now();
+    const timestamps = cooldowns.get(command.data.name);
+    const defaultCooldownDuration = 3;
+    const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000;  // in ms
+
+    if (timestamps.has(interaction.user.id)) {  // if the user has called this command before, check if cooldown is over
+        const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+        if (now < expirationTime) {  // still in cooldown
+            const expiredTimestamp = Math.round(expirationTime / 1000);
+            return interaction.reply({
+                content: `Command \`${command.data.name}\` still cooling down. Try again <t:${expiredTimestamp}:R>.`,
+                ephemeral: true
+            })
+        }
+    }
+
+    timestamps.set(interaction.user.id, now);
+    setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount)
+
     
     // Execute response to command
     try {
