@@ -26,8 +26,9 @@ const client = new Client({
 });
 
 
-/* Load Discord Bot Token from environment variables (Secrets for Replit) */
-const token = process.env["DISCORD_BOT_SECRET"];
+/* Load Discord Bot Token from config */
+// const config = require('./config.json');
+const token = process.env.DISCORD_TOKEN
 
 
 /* Dynamically load commands */
