@@ -4,15 +4,15 @@
 
 
 
-/* Host a server that listens to port 8080
-to receive constant wake-up HTTPS requests from UptimeRobot */
-const keep_bot_alive = require("./keep_bot_alive.js");
+// /* Host a server that listens to port 8080
+// to receive constant wake-up HTTPS requests from UptimeRobot */
+// const keep_bot_alive = require("./keep_bot_alive.js");
 
 
-/* Maintain a Replit database to store permanent data */
-const db = require("./database.js");
-console.log(process.env['REPLIT_DB_URL']);
-db.list().then(keys => { console.log(keys) });
+// /* Maintain a Replit database to store permanent data */
+// const db = require("./database.js");
+// console.log(process.env['REPLIT_DB_URL']);
+// db.list().then(keys => { console.log(keys) });
 
 
 /* Create bot client using Discord.js */
@@ -124,11 +124,11 @@ client.on(Events.InteractionCreate, async interaction => {
         await command.execute(interaction);
         // database log
         const globalName = interaction.user.globalName;
-        const key = `${globalName}.slashCommandCount`
-        let count = await db.get(key) || 0;
-        console.log(await db.get(key));
-        count += 1;
-        await db.set(key, count);
+        // const key = `${globalName}.slashCommandCount`
+        // let count = await db.get(key) || 0;
+        // console.log(await db.get(key));
+        // count += 1;
+        // await db.set(key, count);
 
     } catch (error) {
 
