@@ -28,7 +28,13 @@ const client = new Client({
 
 /* Load Discord Bot Token from config */
 // const config = require('./config.json');
-const token = process.env.DISCORD_TOKEN
+require('dotenv').config();
+const token = process.env.DISCORD_TOKEN;
+console.log(`Loaded token=${token} \n`)
+if (!process.env.DISCORD_TOKEN) {
+    console.error("DISCORD_TOKEN is missing. Please check your environment variables.");
+    process.exit(1);
+}
 
 
 /* Dynamically load commands */
