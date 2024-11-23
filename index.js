@@ -1,19 +1,16 @@
-/*
-    Dependencies & Credentials
-*/
-
-
-
-// /* Host a server that listens to port 8080
-// to receive constant wake-up HTTPS requests from UptimeRobot */
-// const keep_bot_alive = require("./keep_bot_alive.js");
-
-
-// /* Maintain a Replit database to store permanent data */
-// const db = require("./database.js");
-// console.log(process.env['REPLIT_DB_URL']);
-// db.list().then(keys => { console.log(keys) });
-
+/* Create DB ORM */
+const { sequelize, User } = require("./models");
+(async () => {
+    try {
+        await sequelize.authenticate();
+        console.log("Database connected!");
+        await sequelize.sync({force: true});
+        console.log("Database models synchronized!");
+    } catch (error) {
+        console.error("Database initialization failed:", error);
+        process.exit(1);
+    }
+})();
 
 /* Create bot client using Discord.js */
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
@@ -27,10 +24,8 @@ const client = new Client({
 
 
 /* Load Discord Bot Token from config */
-// const config = require('./config.json');
-require('dotenv').config();
+require('dotenv-safe').config();
 const token = process.env.DISCORD_TOKEN;
-console.log(`Loaded token=${token} \n`)
 if (!process.env.DISCORD_TOKEN) {
     console.error("DISCORD_TOKEN is missing. Please check your environment variables.");
     process.exit(1);
