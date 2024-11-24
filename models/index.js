@@ -1,7 +1,10 @@
 const Sequelize = require("sequelize");
 const fs = require("fs");
 const path = require("path");
-require('dotenv').config();
+require('dotenv-safe').config({
+    path: path.resolve(__dirname, `../.env.${process.env.NODE_ENV || "dev"}`),
+    example: path.resolve(__dirname, `../.env.example`),
+});
 
 // load DB config
 const DB_NAME = process.env.DB_NAME;
@@ -17,10 +20,10 @@ if (!DB_NAME || !DB_USER || !DB_PASSWORD) {
 
 // init DB
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
-	host: DB_HOST,
+    host: DB_HOST,
     port: DB_PORT,
-	dialect: 'postgres',
-	logging: false,
+    dialect: 'postgres',
+    logging: false,
 });
 
 // load all DB models

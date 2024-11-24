@@ -1,11 +1,40 @@
 /* Create DB ORM */
-const { sequelize, User } = require("./models");
+const { sequelize, users } = require("./models");
+const isDev = process.env.NODE_ENV === "dev";
+console.log("Sequelize config:", sequelize.config);
 (async () => {
     try {
+        // connect
         await sequelize.authenticate();
         console.log("Database connected!");
-        await sequelize.sync({force: true});
+        // migration
+        await sequelize.sync({force: false, alter: true});
         console.log("Database models synchronized!");
+        // test
+        // // C
+        // const testUser = await users.create({
+        //     userId: "testing_dev_env_and_DB_migrations",
+        //     commandCount: 233,
+        // })
+        // console.log("Test user created: ", testUser.toJSON());
+        // // R
+        // const foundTestUser = await users.findByPk("testing_dev_env_and_DB_migrations");
+        // if (foundTestUser) {
+        //     console.log("Test user found: ", foundTestUser.toJSON());
+        // } else {
+        //     console.log(`Test user "testing_dev_env_and_DB_migrations" not found.`);
+        // }
+        // // U
+        // if (foundTestUser) {
+        //     foundTestUser.commandCount += 1;
+        //     await foundTestUser.save();
+        //     console.log("Test user updated: ", foundTestUser.toJSON());
+        // }
+        // // D
+        // if (foundTestUser) {
+        //     await foundTestUser.destroy();
+        //     console.log("Test user deleted.");
+        // }
     } catch (error) {
         console.error("Database initialization failed:", error);
         process.exit(1);
@@ -13,7 +42,7 @@ const { sequelize, User } = require("./models");
 })();
 
 /* Create bot client using Discord.js */
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits, CommandInteraction } = require('discord.js');
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -24,7 +53,11 @@ const client = new Client({
 
 
 /* Load Discord Bot Token from config */
-require('dotenv-safe').config();
+const path = require('node:path');
+require('dotenv-safe').config({
+    path: path.resolve(__dirname, `.env.${process.env.NODE_ENV || "dev"}`),
+    example: path.resolve(__dirname, `.env.example`),
+});
 const token = process.env.DISCORD_TOKEN;
 if (!process.env.DISCORD_TOKEN) {
     console.error("DISCORD_TOKEN is missing. Please check your environment variables.");
@@ -34,7 +67,6 @@ if (!process.env.DISCORD_TOKEN) {
 
 /* Dynamically load commands */
 const fs = require('node:fs');
-const path = require('node:path');
 client.commands = new Collection();
 // Read in all command categories (folders)
 const foldersPath = path.join(__dirname, 'commands');

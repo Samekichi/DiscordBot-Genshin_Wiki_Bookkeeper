@@ -7,8 +7,8 @@
     "node": "^16.9"
   },
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node index.js NODE_ENV=prod",
+    "dev": "node index.js NODE_ENV=dev"
   },
   "author": "Samekichi",
   "license": "MIT",
