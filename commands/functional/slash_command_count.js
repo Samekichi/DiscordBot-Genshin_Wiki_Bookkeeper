@@ -15,12 +15,12 @@ module.exports = {
     async execute(interaction) {
         // Fetch successful slash command count
         const userId = interaction.user.id;
-        const isEphemeral = interaction.options.getBoolean("is_ephemeral");
+        const isEphemeral = interaction.options.getBoolean("is_ephemeral") ?? true;
         try {
             const count = await Users.getCommandCount(userId);
             interaction.reply({
                 content: count == 0 ? `你还未曾调用过珐露珊前辈的斜线指令，这是第一次喔！` : `你已成功调用了 ${count} 次斜线指令！`,
-                ephemeral: isEphemeral ?? true
+                ephemeral: isEphemeral
             });
         } catch (error) {
             console.error(`Failed to fetch commanCount for ${userId}: ${error}`);
