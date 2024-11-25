@@ -28,10 +28,11 @@ const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
 
 // load all models
 const models = {};
-fs.readdirSync(__dirname)
+const modelsPath = path.resolve(__dirname, "models")
+fs.readdirSync(modelsPath)
     .filter(file => file !== "index.js" && file.endsWith(".js"))
     .forEach(file => {
-        const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+        const model = require(path.join(modelsPath, file))(sequelize, Sequelize.DataTypes);
         models[model.name] = model;
     })
 
