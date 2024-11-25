@@ -2,8 +2,8 @@ const Sequelize = require("sequelize");
 const fs = require("fs");
 const path = require("path");
 require('dotenv-safe').config({
-    path: path.resolve(__dirname, `../.env.${process.env.NODE_ENV || "dev"}`),
-    example: path.resolve(__dirname, `../.env.example`),
+    path: path.resolve(__dirname, `.env.${process.env.NODE_ENV || "dev"}`),
+    example: path.resolve(__dirname, `.env.example`),
 });
 
 // load DB config
@@ -35,11 +35,12 @@ fs.readdirSync(__dirname)
         models[model.name] = model;
     })
 
-// create associations
-Object.keys(models).forEach(modelName => {
-    if (models[modelName].associate) {
-        models[modelName].associate(models);
-    }
-})
+// sync DB
+const force = process.argv.includes("--force") || process.argv.includes("-f");
 
-module.exports = { sequelize, ...models };
+sequelize.sync({force: force, alter: true}).then(async () => {
+    /* upsert initial data if needed */
+	console.log('Database synced');
+	sequelize.close();
+}).catch(console.error);
+
