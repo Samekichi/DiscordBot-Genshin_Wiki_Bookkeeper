@@ -15,12 +15,13 @@ module.exports = (sequelize, DataTypes) => {
         }
 
         static async increaseCommandCount(userId, amount = 1) {
-            const [rowsUpdated] = await this.increment("commandCount", {
+            const [[affectedInstances, instanceCount]] = await this.increment("commandCount", {
                 by: amount,
                 where: { userId: userId },
-            });
-
-            if (rowsUpdated == null) {
+            });  // result is [the updated `user`, affected count] in PostgreSQL, `undefined` o.w.
+            
+            if (instanceCount == 0) {
+                console.log("Creating new user (increaseCommandCount)");
                 await this.create({ userId: userId, commandCount: amount });
             }
         }
@@ -32,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
             });
 
             if (user == null) {
+                console.log("Creating new user (getCommandCount)");
                 user = await this.create({ userId: userId, commandCount: 0 });
             }
 
