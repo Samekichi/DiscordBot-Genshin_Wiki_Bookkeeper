@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const db = require("../../database.js");
+const { Users } = require('../../models');
 
 module.exports = {
     cooldown: 5,
@@ -14,14 +14,20 @@ module.exports = {
 
     async execute(interaction) {
         // Fetch successful slash command count
-        const globalName = interaction.user.globalName;
-        const key = `${globalName}.slashCommandCount`;
-        const count = await db.get(key) || 0;
-        // Check if ephemeral or not
+        const userId = interaction.user.id;
         const isEphemeral = interaction.options.getBoolean("is_ephemeral");
-        interaction.reply({
-            content: count == 0 ? `你还未曾调用过珐露珊前辈的斜线指令，这是第一次喔！` : `你已成功调用了 ${count} 次斜线指令！`,
-            ephemeral: isEphemeral
-        });
+        try {
+            const count = await Users.getCommandCount(userId);
+            interaction.reply({
+                content: count == 0 ? `你还未曾调用过珐露珊前辈的斜线指令，这是第一次喔！` : `你已成功调用了 ${count} 次斜线指令！`,
+                ephemeral: isEphemeral ?? true
+            });
+        } catch (error) {
+            console.error(`Failed to fetch commanCount for ${userId}: ${error}`);
+            interaction.reply({
+                content: `Failed to fetch your slash command ocunt.`,
+                ephemeral: true
+            });
+        }
     }
 }

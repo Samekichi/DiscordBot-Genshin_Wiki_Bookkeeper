@@ -1,5 +1,5 @@
 /* Create DB ORM */
-const { sequelize, users } = require("./models");
+const { sequelize, Users } = require("./models");
 const isDev = process.env.NODE_ENV === "dev";
 console.log("Sequelize config:", sequelize.config);
 
@@ -135,12 +135,7 @@ client.on(Events.InteractionCreate, async interaction => {
         // execution
         await command.execute(interaction);
         // database log
-        const globalName = interaction.user.globalName;
-        // const key = `${globalName}.slashCommandCount`
-        // let count = await db.get(key) || 0;
-        // console.log(await db.get(key));
-        // count += 1;
-        // await db.set(key, count);
+        await Users.increaseCommandCount(interaction.user.id);
 
     } catch (error) {
 
