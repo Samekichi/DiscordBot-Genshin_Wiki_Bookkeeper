@@ -40,3 +40,22 @@ const rest = new REST().setToken(token);
     }
 })();
 
+
+// /* Delete all guild commands */
+// (async () => {
+//     try {
+//         console.log('Fetching guild commands...');
+//         const guildCommands = await rest.get(Routes.applicationGuildCommands(clientId, guildId));
+
+//         console.log('Guild commands:', guildCommands);
+
+//         for (const command of guildCommands) {
+//             console.log(`Deleting guild command: ${command.name}`);
+//             await rest.delete(Routes.applicationGuildCommand(clientId, guildId, command.id));
+//         }
+
+//         console.log('Successfully deleted all guild commands.');
+//     } catch (error) {
+//         console.error('Failed to delete guild commands:', error);
+//     }
+// })();
