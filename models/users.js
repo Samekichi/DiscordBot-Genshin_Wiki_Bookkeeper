@@ -54,10 +54,38 @@ module.exports = (sequelize, DataTypes) => {
 
             if (user == null) {
                 console.log("Creating new user (getCommandCount)");
-                user = await this.create({ userId: userId, commandCount: 0 });
+                user = await this.createUser(userId);
             }
 
             return user.commandCount;
+        }
+
+        static async getUser(userId) {
+            if (userId == null) {
+                throw new Error("userId must be specified.");
+            }
+            return await this.findOne({
+                where: { userId: userId},
+            })
+        }
+
+        static async createUser(userId) {
+            if (userId == null) {
+                throw new Error("userId must be specified.");
+            }
+            return await this.create({
+                userId: userId,
+                commandCount: 0,
+            })
+        }
+
+        static async getOrCreateUser(userId) {
+            var user = await this.getUser(userId);
+            if (user == null) {
+                console.log("Creating new user (getOrCreateUser)");
+                user = await this.createUser(userId);
+            }
+            return user;   
         }
     }
 
