@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
                 references: {
-                    model: "Users",
+                    model: "users",
                     key: "userId",
                 },
                 onUpdate: "CASCADE",
@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.UUID,
                 allowNull: false,
                 references: {
-                    model: "Titles",
+                    model: "titles",
                     key: "titleId",
                 },
                 onUpdate: "CASCADE",
@@ -51,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: true,  // null if system grant
                 references: {
-                    model: "Users",
+                    model: "users",
                     key: "userId",
                 },
                 onUpdate: "CASCADE",
