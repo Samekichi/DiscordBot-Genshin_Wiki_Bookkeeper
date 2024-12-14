@@ -50,13 +50,13 @@ module.exports = (sequelize, DataTypes) => {
             grantedBy: {
                 type: DataTypes.STRING,
                 allowNull: true,  // null if system grant
+                defaultValue: null,
                 references: {
                     model: "users",
                     key: "userId",
                 },
                 onUpdate: "CASCADE",
                 onDelete: "NO ACTION",
-                defaultValue: null,
             },
             isCustom: {
                 type: DataTypes.BOOLEAN,

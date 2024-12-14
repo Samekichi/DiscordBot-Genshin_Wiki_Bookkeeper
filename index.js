@@ -9,9 +9,6 @@ console.log("Sequelize config:", sequelize.config);
         // connect to database
         await sequelize.authenticate();
         console.log("Database connected!");
-        // apply migration
-        await sequelize.sync({force: false, alter: true});  // for convenience of dev, should move to `dbInit.js + migration files` in the future
-        console.log("Database models synchronized!");
     } catch (error) {
         console.error("Database initialization failed:", error);
         process.exit(1);
