@@ -41,26 +41,19 @@ if (!process.env.DISCORD_TOKEN) {
 
 
 /* Dynamically load commands */
-const fs = require('node:fs');
 client.commands = new Collection();
-// Read in all command categories (folders)
-const foldersPath = path.join(__dirname, 'commands');
-const commandFolders = fs.readdirSync(foldersPath);
-// Read in all commmand files
-for (const folder of commandFolders) {
-    const commandsPath = path.join(foldersPath, folder);
-    const commandsFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-    // Load all valid commands into bot client
-    for (const file of commandsFiles) {
-        const filePath = path.join(commandsPath, file);
-        const command = require(filePath);
-        // Set a new item in the Collection with the key as the command name
-        // & the value as the exported module.
-        if ('data' in command && 'execute' in command) {
-            client.commands.set(command.data.name, command);
-        } else {
-            console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-        }
+// Read in all commands from the commands folder
+const commandsFolderPath = path.join(__dirname, 'commands');
+const { loadCommandsRecursive } = require('./utils/commandsLoader');
+const loadedCommands = loadCommandsRecursive(commandsFolderPath);
+
+for (const { command, fullPath} of loadedCommands) {
+    // Set a new item in the Collection with the key as the command name
+    // & the value as the exported module.
+    if ('data' in command && 'execute' in command) {
+        client.commands.set(command.data.name, command);
+    } else {
+        console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
     }
 }
 
