@@ -1,11 +1,11 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const { Users, Titles, UserTitles } = require("../../../models");
 
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-        .setName(`create_personal_title`)
-        .setDescription(`Create a personalized title for yourself.`)
+        .setName(`create_guild_title`)
+        .setDescription(`Create a title for your current guild.`)
         .addStringOption((option) =>
             option
                 .setName("title_name")
@@ -31,25 +31,17 @@ module.exports = {
         ),
 
     async execute(interaction) {
-        const userId = interaction.user.id;
-        // Ensure user exists
-        const user = await Users.getOrCreateUser(userId);
-        // Check if user already has custom title
-        const userTitles = await UserTitles.getTitlesByUserId({
-            userId: userId,
-            isCustom: true,
-        });
-        if (userTitles.length > 0) {
-            console.log(userTitles[0]);
+        // Ensure user is permitted
+        if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
             interaction.reply({
-                content: `You already have a personalized title "${userTitles[0].title.name
-                    }${userTitles[0].title.description
-                        ? ": " + userTitles[0].title.description
-                        : ""
-                    }". You can only have one personalized title.`,
-            });
+                content: `You must be an administrator to create a guild title.`,
+            })
             return;
         }
+        // Ensure creator exists
+        const userId = interaction.user.id;
+        const user = await Users.getOrCreateUser(userId);
+
         // Create a new title
         const titleName = interaction.options.getString("title_name");
         const description = interaction.options.getString("description") || null;
@@ -62,31 +54,25 @@ module.exports = {
                 category,
                 userId
             );
-            const userTitle = await UserTitles.grantTitle({
-                userId: user.userId,
-                titleId: title.titleId,
-                grantedBy: user.userId,
-                isCustom: true,
-                isSystemGrant: false,
-                isActive: true,
-            });
-
             interaction.reply({
                 content:
                     title != null
-                        ? `Congrats! You now have your own title "${title.name}"!`
-                        : `Failed to create your personal title.`,
+                        ? `Successfully created guild title "${title.name}${title.description
+                        ? ": " + title.description
+                        : ""
+                    }"!`
+                        : `Failed to create guild title.`,
                 ephemeral:
                     title != null 
                         ? false 
                         : true,
             });
         } catch (error) {
-            console.error(`Failed to create personal title for ${userId}: ${error}`);
+            console.error(`Failed to create guild title by ${userId}: ${error}`);
             interaction.reply({
-                content: `Failed to create your personal title: ${error}`,
+                content: `Failed to create guild title: ${error}`,
                 ephemeral: true,
             });
         }
-    },
+    }
 };
