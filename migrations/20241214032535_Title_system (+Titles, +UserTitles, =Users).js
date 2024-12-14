@@ -117,11 +117,11 @@ const migrationCommands = (transaction) => [
 const rollbackCommands = (transaction) => [
   {
     fn: "dropTable",
-    params: ["titles", { transaction }],
+    params: ["user_titles", { transaction }],
   },
   {
     fn: "dropTable",
-    params: ["user_titles", { transaction }],
+    params: ["titles", { transaction }],
   },
 ];
 
