@@ -12,10 +12,12 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             UserTitles.belongsTo(models.Users, {
                 foreignKey: "userId",
+                as: "owner",
             })
 
             UserTitles.belongsTo(models.Titles, {
                 foreignKey: "titleId",
+                as: "title",
             })
 
             UserTitles.belongsTo(models.Users, {
@@ -23,8 +25,8 @@ module.exports = (sequelize, DataTypes) => {
                 as: "grantor",
             })
         }
-        
-        static async grantTitle(userId, titleId, grantedBy = null, isCustom = false, isSystemGrant = true, isActive = false) {
+
+        static async grantTitle({ userId, titleId, grantedBy = null, isCustom = false, isSystemGrant = true, isActive = false } = {}) {
             if (userId == null || titleId == null) {
                 throw new Error("userId and titleId must be specified.");
             }
@@ -42,15 +44,15 @@ module.exports = (sequelize, DataTypes) => {
         }
 
         // Basic UserTitle getter
-        static async getTitlesByUserId(userId, isCustom = null, isSystemGrant = null, isActive = null) {
+        static async getTitlesByUserId({ userId, isCustom = null, isSystemGrant = null, isActive = null } = {}) {
             const whereCondition = { userId };
-            if (isCustom != null) {
+            if (isCustom !== null) {
                 whereCondition.isCustom = isCustom;
             }
-            if (isSystemGrant != null) {
+            if (isSystemGrant !== null) {
                 whereCondition.isSystemGrant = isSystemGrant;
             }
-            if (isActive != null) {
+            if (isActive !== null) {
                 whereCondition.isActive = isActive;
             }
             return await this.findAll({
@@ -58,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
                 include: [
                     {
                         model: sequelize.models.Titles,
-                         as: "title"
+                        as: "title"
                     },
                 ],
             })
@@ -75,7 +77,7 @@ module.exports = (sequelize, DataTypes) => {
         static async getSystemGrantedTitlesByUserId(userId) {
             return await this.getTitlesByUserId(userId, isSystemGrant = true);
         }
-        
+
     }
 
     UserTitles.init(
