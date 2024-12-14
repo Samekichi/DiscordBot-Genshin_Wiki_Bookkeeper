@@ -40,7 +40,7 @@ module.exports = {
         }
         // Ensure creator exists
         const userId = interaction.user.id;
-        const user = await Users.getOrCreateUser(userId);
+        const user = await Users.getOrCreateUser(userId, interaction.user);
 
         // Create a new title
         const titleName = interaction.options.getString("title_name");

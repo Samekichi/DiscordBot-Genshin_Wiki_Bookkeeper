@@ -33,7 +33,7 @@ module.exports = {
     async execute(interaction) {
         const userId = interaction.user.id;
         // Ensure user exists
-        const user = await Users.getOrCreateUser(userId);
+        const user = await Users.getOrCreateUser(userId, interaction.user);
         // Check if user already has custom title
         const userTitles = await UserTitles.getTitlesByUserId({
             userId: userId,
