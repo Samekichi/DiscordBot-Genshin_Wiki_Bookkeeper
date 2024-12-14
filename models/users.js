@@ -1,5 +1,5 @@
 "use strict";
-const { Model } = require("sequelize");
+const { Model, Sequelize } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
     class Users extends Model {
@@ -69,21 +69,28 @@ module.exports = (sequelize, DataTypes) => {
             })
         }
 
-        static async createUser(userId) {
-            if (userId == null) {
-                throw new Error("userId must be specified.");
+        static async createUser(userId, userInstance) {
+            if (userId == null || userInstance == null) {
+                throw new Error("userId and userInstance must be specified.");
             }
+            const createDate = new Date();
             return await this.create({
                 userId: userId,
+                username: userInstance.username,
+                discriminator: userInstance.discriminator,
+                avatar: userInstance.displayAvatarURL(),
+                isBot: userInstance.bot,
+                firstActive: createDate,
+                // lastActive: createDate,
                 commandCount: 0,
             })
         }
 
-        static async getOrCreateUser(userId) {
+        static async getOrCreateUser(userId, userInstance) {
             var user = await this.getUser(userId);
             if (user == null) {
                 console.log("Creating new user (getOrCreateUser)");
-                user = await this.createUser(userId);
+                user = await this.createUser(userId, userInstance);
             }
             return user;   
         }
@@ -101,6 +108,21 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 primaryKey: true,
             },
+            username: DataTypes.STRING,
+            discriminator: DataTypes.STRING,
+            avatar: DataTypes.STRING,
+            isBot: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+            },
+            firstActive: {
+                type: DataTypes.DATE,
+                defaultValue: Sequelize.NOW,
+            },
+            // lastActive: {
+            //     type: DataTypes.DATE,
+            //     defaultValue: Sequelize.NOW,
+            // },
             commandCount: {
                 type: DataTypes.INTEGER,
                 defaultValue: 0,
