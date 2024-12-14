@@ -25,12 +25,11 @@ module.exports = (sequelize, DataTypes) => {
             })
         }
 
-        static async createTitle(name, description, category="basic", createdBy) {
+        static async createTitle(name, description, category="BASIC", createdBy) {
             if (name == null || createdBy == null) {
                 throw new Error("name and createdBy must be specified.");
             }
             return await this.create({
-                titleId: DataTypes.UUIDV4,
                 name: name,
                 description: description,
                 category: category,
@@ -43,6 +42,7 @@ module.exports = (sequelize, DataTypes) => {
         {
             titleId: { 
                 type:DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
                 allowNull: false,
                 primaryKey: true,
             },

@@ -4,6 +4,10 @@
             "tableName": "titles",
             "schema": {
                 "titleId": {
+                    "defaultValue": {
+                        "internal": true,
+                        "value": "Sequelize.UUIDV4"
+                    },
                     "allowNull": false,
                     "primaryKey": true,
                     "field": "titleId",
@@ -159,5 +163,5 @@
     "path": "Z:\\工程 - Projects\\Genshin Wiki Bookkeeper (Discord Bot)\\migrations\\_current.json",
     "backupPath": "Z:\\工程 - Projects\\Genshin Wiki Bookkeeper (Discord Bot)\\migrations\\_current_bak.json",
     "exists": true,
-    "revision": 3
+    "revision": 4
 }

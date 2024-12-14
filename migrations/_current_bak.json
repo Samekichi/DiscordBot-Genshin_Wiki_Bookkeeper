@@ -106,15 +106,15 @@
                 },
                 "grantedBy": {
                     "allowNull": true,
+                    "defaultValue": {
+                        "value": null
+                    },
                     "references": {
                         "model": "users",
                         "key": "userId"
                     },
                     "onUpdate": "CASCADE",
                     "onDelete": "NO ACTION",
-                    "defaultValue": {
-                        "value": null
-                    },
                     "field": "grantedBy",
                     "seqType": "Sequelize.STRING"
                 },
@@ -134,6 +134,14 @@
                     "field": "isSystemGrant",
                     "seqType": "Sequelize.BOOLEAN"
                 },
+                "isActive": {
+                    "allowNull": false,
+                    "defaultValue": {
+                        "value": false
+                    },
+                    "field": "isActive",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
                 "createdAt": {
                     "allowNull": false,
                     "field": "createdAt",
@@ -151,5 +159,5 @@
     "path": "Z:\\工程 - Projects\\Genshin Wiki Bookkeeper (Discord Bot)\\migrations\\_current.json",
     "backupPath": "Z:\\工程 - Projects\\Genshin Wiki Bookkeeper (Discord Bot)\\migrations\\_current_bak.json",
     "exists": true,
-    "revision": 2
+    "revision": 3
 }
