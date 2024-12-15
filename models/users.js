@@ -29,6 +29,14 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "grantedBy",
                 as: "grantedTitles",
             })
+
+            // 4. A User can be a member of many guilds
+            Users.belongsToMany(models.Guilds, {
+                through: "GuildMembers",
+                foreignKey: "userId",
+                otherKey: "guildId",
+                as: "guilds",
+            })
         }
 
         static async increaseCommandCount(userId, amount = 1) {
@@ -60,34 +68,22 @@ module.exports = (sequelize, DataTypes) => {
             return user.commandCount;
         }
 
-        static async getUser(userId) {
-            if (userId == null) {
-                throw new Error("userId must be specified.");
-            }
-            return await this.findOne({
-                where: { userId: userId},
-            })
-        }
-
         static async createUser(userId, userInstance) {
             if (userId == null || userInstance == null) {
                 throw new Error("userId and userInstance must be specified.");
             }
-            const createDate = new Date();
             return await this.create({
                 userId: userId,
                 username: userInstance.username,
                 discriminator: userInstance.discriminator,
                 avatar: userInstance.displayAvatarURL(),
                 isBot: userInstance.bot,
-                firstActive: createDate,
-                // lastActive: createDate,
                 commandCount: 0,
             })
         }
 
         static async getOrCreateUser(userId, userInstance) {
-            var user = await this.getUser(userId);
+            var user = await this.findByPk(userId);
             if (user == null) {
                 console.log("Creating new user (getOrCreateUser)");
                 user = await this.createUser(userId, userInstance);
@@ -115,14 +111,6 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false,
             },
-            firstActive: {
-                type: DataTypes.DATE,
-                defaultValue: Sequelize.NOW,
-            },
-            // lastActive: {
-            //     type: DataTypes.DATE,
-            //     defaultValue: Sequelize.NOW,
-            // },
             commandCount: {
                 type: DataTypes.INTEGER,
                 defaultValue: 0,

@@ -1,5 +1,110 @@
 {
     "tables": {
+        "guild_members": {
+            "tableName": "guild_members",
+            "schema": {
+                "guildId": {
+                    "allowNull": false,
+                    "references": {
+                        "model": "guilds",
+                        "key": "guildId"
+                    },
+                    "onUpdate": "CASCADE",
+                    "onDelete": "CASCADE",
+                    "field": "guildId",
+                    "primaryKey": true,
+                    "unique": "guild_members_userId_guildId_unique",
+                    "seqType": "Sequelize.STRING"
+                },
+                "userId": {
+                    "allowNull": false,
+                    "references": {
+                        "model": "users",
+                        "key": "userId"
+                    },
+                    "onUpdate": "CASCADE",
+                    "onDelete": "CASCADE",
+                    "field": "userId",
+                    "primaryKey": true,
+                    "unique": "guild_members_userId_guildId_unique",
+                    "seqType": "Sequelize.STRING"
+                },
+                "joinDate": {
+                    "allowNull": false,
+                    "defaultValue": {
+                        "internal": true,
+                        "value": "Sequelize.NOW"
+                    },
+                    "field": "joinDate",
+                    "seqType": "Sequelize.DATE"
+                },
+                "role": {
+                    "allowNull": true,
+                    "field": "role",
+                    "seqType": "Sequelize.STRING"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
+        "guilds": {
+            "tableName": "guilds",
+            "schema": {
+                "guildId": {
+                    "allowNull": false,
+                    "primaryKey": true,
+                    "field": "guildId",
+                    "seqType": "Sequelize.STRING"
+                },
+                "name": {
+                    "field": "name",
+                    "seqType": "Sequelize.STRING"
+                },
+                "nameAcronym": {
+                    "field": "nameAcronym",
+                    "seqType": "Sequelize.STRING"
+                },
+                "description": {
+                    "field": "description",
+                    "seqType": "Sequelize.STRING"
+                },
+                "icon": {
+                    "field": "icon",
+                    "seqType": "Sequelize.STRING"
+                },
+                "ownerId": {
+                    "allowNull": false,
+                    "references": {
+                        "model": "users",
+                        "key": "userId"
+                    },
+                    "field": "ownerId",
+                    "onDelete": "NO ACTION",
+                    "onUpdate": "CASCADE",
+                    "seqType": "Sequelize.STRING"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
         "titles": {
             "tableName": "titles",
             "schema": {
@@ -46,6 +151,17 @@
                     "allowNull": false,
                     "field": "updatedAt",
                     "seqType": "Sequelize.DATE"
+                },
+                "guildId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "guilds",
+                        "key": "guildId"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "guildId",
+                    "seqType": "Sequelize.STRING"
                 }
             },
             "indexes": []
@@ -58,6 +174,25 @@
                     "primaryKey": true,
                     "field": "userId",
                     "seqType": "Sequelize.STRING"
+                },
+                "username": {
+                    "field": "username",
+                    "seqType": "Sequelize.STRING"
+                },
+                "discriminator": {
+                    "field": "discriminator",
+                    "seqType": "Sequelize.STRING"
+                },
+                "avatar": {
+                    "field": "avatar",
+                    "seqType": "Sequelize.STRING"
+                },
+                "isBot": {
+                    "defaultValue": {
+                        "value": false
+                    },
+                    "field": "isBot",
+                    "seqType": "Sequelize.BOOLEAN"
                 },
                 "commandCount": {
                     "defaultValue": {

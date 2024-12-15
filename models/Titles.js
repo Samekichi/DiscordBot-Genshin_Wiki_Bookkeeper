@@ -23,6 +23,13 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: "userId",
                 as: "users",
             })
+
+            // 3. A title belongs to a guild
+            Titles.belongsTo(models.Guilds, {
+                foreignKey: "guildId",
+                as: "guild",
+            })
+
         }
 
         static async createTitle(name, description, category="BASIC", createdBy) {
@@ -57,10 +64,18 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 references: {
                     model: "users",
-                    key: "userId"
+                    key: "userId",
                 },
                 onUpdate: "CASCADE",
                 onDelete: "NO ACTION",
+            },
+            guildId: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                references: {
+                    model: "guilds",
+                    key: "guildId",
+                }
             }
         },
         {
