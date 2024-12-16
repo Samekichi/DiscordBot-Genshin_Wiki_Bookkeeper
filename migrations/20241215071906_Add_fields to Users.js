@@ -11,7 +11,7 @@ const Sequelize = require("sequelize");
  */
 
 const info = {
-  revision: 5,
+  revision: 4,
   name: "Add fields to Users",
   created: "2024-12-15T07:19:06.417Z",
   comment: "",

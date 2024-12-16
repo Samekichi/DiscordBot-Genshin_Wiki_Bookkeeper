@@ -8,7 +8,7 @@ const Sequelize = require("sequelize");
  */
 
 const info = {
-  revision: 4,
+  revision: 3,
   name: "Auto UUID for Title.titleId",
   created: "2024-12-14T08:23:08.098Z",
   comment: "",

@@ -31,30 +31,27 @@ module.exports = (sequelize, DataTypes) => {
             })
         }
 
-        static async createUser(userId, userInstance) {
-            if (userId == null || userInstance == null) {
-                throw new Error("userId and userInstance must be specified.");
+        static async createGuild(guildId, guildInstance) {
+            if (guildId == null || guildInstance == null) {
+                throw new Error("guildId and guildInstance must be specified.");
             }
-            const createDate = new Date();
             return await this.create({
-                userId: userId,
-                username: userInstance.username,
-                discriminator: userInstance.discriminator,
-                avatar: userInstance.displayAvatarURL(),
-                isBot: userInstance.bot,
-                firstActive: createDate,
-                // lastActive: createDate,
-                commandCount: 0,
+                guildId: guildId,
+                name: guildInstance.name,
+                nameAcronym: guildInstance.nameAcronym,
+                description: guildInstance.description,
+                icon: iconURL(),
+                ownerId: guildInstance.ownerId,
             })
         }
 
-        static async getOrCreateUser(userId, userInstance) {
-            var user = await this.findByPk(userId);
-            if (user == null) {
-                console.log("Creating new user (getOrCreateUser)");
-                user = await this.createUser(userId, userInstance);
+        static async getOrCreateGuild(guildId, guildInstance) {
+            var guild = await this.findByPk(guildId);
+            if (guild == null) {
+                console.log("Creating new guild (getOrCreateGuild)");
+                guild = await this.createGuild(guildId, guildInstance);
             }
-            return user;   
+            return guild;   
         }
     }
 
@@ -77,6 +74,11 @@ module.exports = (sequelize, DataTypes) => {
                     key: "userId",
                 },
             },
+            maxTitleCountPerMember: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue: 3,
+            }
         },
         {
             sequelize,

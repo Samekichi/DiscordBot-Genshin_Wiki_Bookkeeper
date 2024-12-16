@@ -37,7 +37,6 @@ module.exports = (sequelize, DataTypes) => {
                 userId: userId,
                 titleId: titleId,
                 grantedBy: grantedBy,
-                isCustom: isCustom,
                 isSystemGrant: isSystemGrant,
                 isActive: isActive,
             })
@@ -112,11 +111,6 @@ module.exports = (sequelize, DataTypes) => {
                 },
                 onUpdate: "CASCADE",
                 onDelete: "NO ACTION",
-            },
-            isCustom: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
             },
             isSystemGrant: {
                 type: DataTypes.BOOLEAN,

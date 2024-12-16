@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
 
         }
 
-        static async createTitle(name, description, category="BASIC", createdBy) {
+        static async createTitle(name, description, category="BASIC", createdBy, guildId) {
             if (name == null || createdBy == null) {
                 throw new Error("name and createdBy must be specified.");
             }
@@ -41,6 +41,7 @@ module.exports = (sequelize, DataTypes) => {
                 description: description,
                 category: category,
                 createdBy: createdBy,
+                guildId: guildId,
             })
         }
     }
@@ -53,12 +54,25 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 primaryKey: true,
             },
+            guildId: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                references: {
+                    model: "guilds",
+                    key: "guildId",
+                }
+            },
             name: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
             description: DataTypes.STRING,
             category: DataTypes.STRING,
+            isCustom: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultvalue: false,
+            },
             createdBy: {
                 type: DataTypes.STRING,
                 allowNull: false,
@@ -69,20 +83,19 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: "CASCADE",
                 onDelete: "NO ACTION",
             },
-            guildId: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                references: {
-                    model: "guilds",
-                    key: "guildId",
-                }
-            }
         },
         {
             sequelize,
             modelName: "Titles",
             tableName: "titles",
             timestamps: true,
+            constraints: [
+                {
+                    fields: ["guildId", "name"],
+                    type: "unique",
+                    name: "unique_title_name_per_guild"
+                }
+            ]
         }
     );
 

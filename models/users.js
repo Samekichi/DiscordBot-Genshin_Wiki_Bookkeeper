@@ -37,6 +37,12 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: "guildId",
                 as: "guilds",
             })
+
+            // 5. A User can own many guilds
+            Users.hasMany(models.Guilds, {
+                foreignKey: "ownerId",
+                as: "ownedGuilds",
+            })
         }
 
         static async increaseCommandCount(userId, amount = 1) {

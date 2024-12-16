@@ -3,15 +3,17 @@ const Sequelize = require("sequelize");
 /**
  * Actions summary:
  *
- * createTable() => "titles", deps: [users]
- * createTable() => "user_titles", deps: [users, titles, users]
+ * createTable() => "guilds", deps: [users]
+ * createTable() => "guild_members", deps: [guilds, users]
+ * addColumn(isCustom) => "titles"
+ * addColumn(guildId) => "titles"
  *
  */
 
 const info = {
-  revision: 2,
-  name: "Title system (+Titles, +UserTitles, =Users)",
-  created: "2024-12-14T03:25:35.559Z",
+  revision: 5,
+  name: "Add Guilds (+Guilds,+GuildMembers,=Users,=Titles,=UserTitles)",
+  created: "2024-12-16T10:22:16.878Z",
   comment: "",
 };
 
@@ -19,23 +21,30 @@ const migrationCommands = (transaction) => [
   {
     fn: "createTable",
     params: [
-      "titles",
+      "guilds",
       {
-        titleId: {
-          type: Sequelize.UUID,
-          field: "titleId",
+        guildId: {
+          type: Sequelize.STRING,
+          field: "guildId",
           primaryKey: true,
           allowNull: false,
         },
-        name: { type: Sequelize.STRING, field: "name", allowNull: false },
+        name: { type: Sequelize.STRING, field: "name" },
+        nameAcronym: { type: Sequelize.STRING, field: "nameAcronym" },
         description: { type: Sequelize.STRING, field: "description" },
-        category: { type: Sequelize.STRING, field: "category" },
-        createdBy: {
+        icon: { type: Sequelize.STRING, field: "icon" },
+        ownerId: {
           type: Sequelize.STRING,
-          field: "createdBy",
-          onDelete: "NO ACTION",
           onUpdate: "CASCADE",
+          onDelete: "NO ACTION",
+          field: "ownerId",
           references: { model: "users", key: "userId" },
+          allowNull: false,
+        },
+        maxTitleCountPerMember: {
+          type: Sequelize.INTEGER,
+          field: "maxTitleCountPerMember",
+          defaultValue: 3,
           allowNull: false,
         },
         createdAt: {
@@ -55,11 +64,21 @@ const migrationCommands = (transaction) => [
   {
     fn: "createTable",
     params: [
-      "user_titles",
+      "guild_members",
       {
+        guildId: {
+          type: Sequelize.STRING,
+          unique: "guild_members_userId_guildId_unique",
+          primaryKey: true,
+          field: "guildId",
+          onDelete: "CASCADE",
+          onUpdate: "CASCADE",
+          references: { model: "guilds", key: "guildId" },
+          allowNull: false,
+        },
         userId: {
           type: Sequelize.STRING,
-          unique: "user_titles_userId_titleId_unique",
+          unique: "guild_members_userId_guildId_unique",
           primaryKey: true,
           field: "userId",
           onDelete: "CASCADE",
@@ -67,36 +86,11 @@ const migrationCommands = (transaction) => [
           references: { model: "users", key: "userId" },
           allowNull: false,
         },
-        titleId: {
-          type: Sequelize.UUID,
-          unique: "user_titles_userId_titleId_unique",
-          primaryKey: true,
-          field: "titleId",
-          onDelete: "CASCADE",
-          onUpdate: "CASCADE",
-          references: { model: "titles", key: "titleId" },
+        joinDate: {
+          type: Sequelize.DATE,
+          field: "joinDate",
+          defaultValue: Sequelize.NOW,
           allowNull: false,
-        },
-        grantedBy: {
-          type: Sequelize.STRING,
-          field: "grantedBy",
-          defaultValue: null,
-          onDelete: "NO ACTION",
-          onUpdate: "CASCADE",
-          references: { model: "users", key: "userId" },
-          allowNull: true,
-        },
-        isSystemGrant: {
-          type: Sequelize.BOOLEAN,
-          field: "isSystemGrant",
-          defaultValue: false,
-          allowNull: false,
-        },
-        isActive:{
-            type: Sequelize.BOOLEAN,
-            field: "isActive",
-            defaultValue: false,
-            allowNull: false,
         },
         createdAt: {
           type: Sequelize.DATE,
@@ -108,6 +102,36 @@ const migrationCommands = (transaction) => [
           field: "updatedAt",
           allowNull: false,
         },
+      },
+      { transaction },
+    ],
+  },
+  {
+    fn: "addColumn",
+    params: [
+      "titles",
+      "isCustom",
+      {
+        type: Sequelize.BOOLEAN,
+        field: "isCustom",
+        defaultvalue: false,
+        allowNull: false,
+      },
+      { transaction },
+    ],
+  },
+  {
+    fn: "addColumn",
+    params: [
+      "titles",
+      "guildId",
+      {
+        type: Sequelize.STRING,
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+        field: "guildId",
+        references: { model: "guilds", key: "guildId" },
+        allowNull: false,
       },
       { transaction },
     ],
@@ -116,12 +140,20 @@ const migrationCommands = (transaction) => [
 
 const rollbackCommands = (transaction) => [
   {
-    fn: "dropTable",
-    params: ["user_titles", { transaction }],
+    fn: "removeColumn",
+    params: ["titles", "isCustom", { transaction }],
+  },
+  {
+    fn: "removeColumn",
+    params: ["titles", "guildId", { transaction }],
   },
   {
     fn: "dropTable",
-    params: ["titles", { transaction }],
+    params: ["guild_members", { transaction }],
+  },
+  {
+    fn: "dropTable",
+    params: ["guilds", { transaction }],
   },
 ];
 

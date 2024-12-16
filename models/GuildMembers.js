@@ -49,10 +49,6 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 defaultValue: Sequelize.NOW,
             },
-            role: {
-                type: DataTypes.STRING,
-                allowNull: true,
-            },
         },
         {
             sequelize,
