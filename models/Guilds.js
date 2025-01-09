@@ -29,29 +29,31 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "guildId",
                 as: "titles",
             })
-        }
 
-        static async createGuild(guildId, guildInstance) {
-            if (guildId == null || guildInstance == null) {
-                throw new Error("guildId and guildInstance must be specified.");
-            }
-            return await this.create({
-                guildId: guildId,
-                name: guildInstance.name,
-                nameAcronym: guildInstance.nameAcronym,
-                description: guildInstance.description,
-                icon: iconURL(),
-                ownerId: guildInstance.ownerId,
+            // 4. A Guild has at most 24 TitleTypes
+            Guilds.hasMany(models.TitleTypes, {
+                foreignKey: "titleTypeId",
+                as: "titleTypes",
             })
         }
-
+        
         static async getOrCreateGuild(guildId, guildInstance) {
-            var guild = await this.findByPk(guildId);
-            if (guild == null) {
-                console.log("Creating new guild (getOrCreateGuild)");
-                guild = await this.createGuild(guildId, guildInstance);
+            const [guild, isNewRecord] = await this.findOrCreate({
+                where: { guildId },
+                defaults: {
+                    name: guildInstance.name,
+                    nameAcronym: guildInstance.nameAcronym,
+                    description: guildInstance.description,
+                    icon: iconURL(),
+                    ownerId: guildInstance.ownerId,
+                }
+            });
+
+            if (isNewRecord) {
+                console.log(`Created new guild "${guild.name}" (getOrCreateGuild)`);
             }
-            return guild;   
+
+            return guild;
         }
     }
 

@@ -20,6 +20,27 @@ module.exports = (sequelize, DataTypes) => {
                 as: "guild",
             })
         }
+
+        static async getOrCreateGuildMember(memberId, guildId, memberInstance, guildInstance) {
+            const { Users, Guilds } = this.sequelize.models;
+            // ensure user and guild exists
+            const userInstance = memberInstance.user
+            const user = await Users.getOrCreateUser(memberId, userInstance)
+            const guild = await Guilds.getOrCreateGuild(guildId, guildInstance)
+            // ensure relation exists
+            const [guildMember, isNewRecord] = await this.findOrCreate({
+                where: { memberId, guildId },
+                defaults: {
+                    joinDate: memberInstance.joinedAt
+                }
+            })
+
+            if (isNewRecord) {
+                console.log(`Created new guild member "${guild.name}"->"${user.username}" (getOrCreateGuildMember)`);
+            }
+            
+            return guildMember;
+        }
     }
 
     GuildMembers.init(

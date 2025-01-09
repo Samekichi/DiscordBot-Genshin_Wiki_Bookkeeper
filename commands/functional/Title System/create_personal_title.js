@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { Users, Titles, UserTitles } = require("../../../models");
+const { Users, Titles, UserTitles, Guilds, GuildMembers, sequelize } = require("../../../models");
 
 module.exports = {
     cooldown: 5,
@@ -20,23 +20,25 @@ module.exports = {
                 .setMaxLength(255)
                 .setRequired(false)
         )
-        .addStringOption(
-            (option) =>
-                option
-                    .setName("category")
-                    .setDescription("The category of the title (default to `BASIC`.)")
-                    .setMaxLength(255)
-                    .setRequired(false)
-            // TODO: Provide choices for existing categories (by Guild). Auto-add new category to Guild DB if not exist.
-        ),
+        // .addStringOption(
+        //     (option) =>
+        //         option
+        //             .setName("type")
+        //             .setDescription("The type of the title.")
+        //             .setMaxLength(255)
+        //             .setRequired(false)
+        // )
+        ,
 
     async execute(interaction) {
+
         const userId = interaction.user.id;
-        // Ensure user exists
-        const user = await Users.getOrCreateUser(userId, interaction.user);
+        const guildId = interaction.guildId;
+
         // Check if user already has custom title
         const userTitles = await UserTitles.getTitlesByUserId({
             userId: userId,
+            guildId: guildId,
             isCustom: true,
         });
         if (userTitles.length > 0) {
@@ -46,30 +48,41 @@ module.exports = {
                     }${userTitles[0].title.description
                         ? ": " + userTitles[0].title.description
                         : ""
-                    }". You can only have one personalized title.`,
+                    }". \nYou can only have one personalized title.`,
             });
             return;
         }
-        // Create a new title
+
+        // Check para validity
         const titleName = interaction.options.getString("title_name");
         const description = interaction.options.getString("description") || null;
         const category = interaction.options.getString("category") || "BASIC";
 
+        // Create a new title atomically
         try {
+            const transaction = await sequelize.transaction();
+
             const title = await Titles.createTitle(
                 titleName,
                 description,
                 category,
-                userId
+                userId,
+                guildId,
+                { transaction }
             );
-            const userTitle = await UserTitles.grantTitle({
-                userId: user.userId,
-                titleId: title.titleId,
-                grantedBy: user.userId,
-                isCustom: true,
-                isSystemGrant: false,
-                isActive: true,
-            });
+            await UserTitles.grantTitle(
+                {
+                    userId: userId,
+                    titleId: title.titleId,
+                    grantedBy: userId,
+                    isCustom: true,
+                    isSystemGrant: false,
+                    isActive: true,
+                }, 
+                { transaction }
+            );
+
+            await transaction.commit();
 
             interaction.reply({
                 content:
@@ -82,6 +95,9 @@ module.exports = {
                         : true,
             });
         } catch (error) {
+            if (transaction) {
+                await transaction.rollback();
+            } 
             console.error(`Failed to create personal title for ${userId}: ${error}`);
             interaction.reply({
                 content: `Failed to create your personal title: ${error}`,

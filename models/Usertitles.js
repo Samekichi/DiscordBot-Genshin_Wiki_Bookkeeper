@@ -1,5 +1,5 @@
 "use strict";
-const { Model } = require("sequelize");
+const { Model, where } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
     class UserTitles extends Model {
@@ -26,24 +26,24 @@ module.exports = (sequelize, DataTypes) => {
             })
         }
 
-        static async grantTitle({ userId, titleId, grantedBy = null, isCustom = false, isSystemGrant = true, isActive = false } = {}) {
-            if (userId == null || titleId == null) {
-                throw new Error("userId and titleId must be specified.");
+        static async grantTitle({ userId, titleId, grantedBy = null, isCustom = false, isSystemGrant = true, isActive = false }, options = {}) {
+            if (!userId || !titleId) {
+                throw new Error("userId and titleId must be specified to grant a Title.");
             }
             if (!isSystemGrant && grantedBy == null) {
-                throw new Error("grantedBy must be specified for non-system grants.");
+                throw new Error("grantedBy must be specified for non-system title grants.");
             }
             return await this.create({
-                userId: userId,
-                titleId: titleId,
-                grantedBy: grantedBy,
-                isSystemGrant: isSystemGrant,
-                isActive: isActive,
-            })
+                userId,
+                titleId,
+                grantedBy,
+                isSystemGrant,
+                isActive,
+            }, options);
         }
 
         // Basic UserTitle getter
-        static async getTitlesByUserId({ userId, isCustom = null, isSystemGrant = null, isActive = null } = {}) {
+        static async getTitlesByUserId({ userId, guildId = null, isCustom = null, isSystemGrant = null, isActive = null }) {
             const whereCondition = { userId };
             if (isCustom !== null) {
                 whereCondition.isCustom = isCustom;
@@ -54,12 +54,20 @@ module.exports = (sequelize, DataTypes) => {
             if (isActive !== null) {
                 whereCondition.isActive = isActive;
             }
+
+            const titleCondition = {};
+            if (guildId !== null) {
+                titleCondition.guildId = guildId;
+            }
+
             return await this.findAll({
                 where: whereCondition,
                 include: [
                     {
                         model: sequelize.models.Titles,
-                        as: "title"
+                        as: "title",
+                        where: titleCondition,
+                        required: true,
                     },
                 ],
             })

@@ -10,13 +10,13 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            // 1. Titles are created by users
+            // 1. Titles are created by Users
             Titles.belongsTo(models.Users, {
                 foreignKey: "createdBy",
                 as: "creator",
             })
 
-            // 2. Titles can be owned by many users
+            // 2. Titles can be owned by many Users
             Titles.belongsToMany(models.Users, {
                 through: "UserTitles",
                 foreignKey: "titleId",
@@ -24,25 +24,31 @@ module.exports = (sequelize, DataTypes) => {
                 as: "users",
             })
 
-            // 3. A title belongs to a guild
+            // 3. A Title belongs to a Guild
             Titles.belongsTo(models.Guilds, {
                 foreignKey: "guildId",
                 as: "guild",
             })
 
+            // 4. A Title belongs to a TitleType
+            Titles.belongsTo(models.TitleTypes, {
+                foreignKey: "titleTypeId",
+                as: "type",
+            })
+
         }
 
-        static async createTitle(name, description, category="BASIC", createdBy, guildId) {
-            if (name == null || createdBy == null) {
-                throw new Error("name and createdBy must be specified.");
+        static async createTitle(name, description, titleTypeId=null, createdBy, guildId, options = {}) {
+            if (!name || !createdBy || !guildId) {
+                throw new Error("name, createdBy, and guildId must be specified to create a Title.");
             }
             return await this.create({
-                name: name,
-                description: description,
-                category: category,
-                createdBy: createdBy,
-                guildId: guildId,
-            })
+                name,
+                description,
+                titleTypeId,
+                createdBy,
+                guildId,
+            }, options);
         }
     }
 
@@ -60,14 +66,25 @@ module.exports = (sequelize, DataTypes) => {
                 references: {
                     model: "guilds",
                     key: "guildId",
-                }
+                },
+                onUpdate: "CASCADE",
+                onDelete: "CASCADE",
             },
             name: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
             description: DataTypes.STRING,
-            category: DataTypes.STRING,
+            titleTypeId: {
+                type: DataTypes.UUID,
+                allowNull: true,  // null = default type
+                references: {
+                    model: "title_types",
+                    key: "titleTypeId",
+                },
+                onUpdate: "CASCADE",
+                onDelete: "SET NULL",  // change to default type
+            },
             isCustom: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
