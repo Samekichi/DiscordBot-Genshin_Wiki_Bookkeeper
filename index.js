@@ -21,6 +21,7 @@ const { Client, Collection, Events, GatewayIntentBits, CommandInteraction } = re
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
     ],
@@ -121,10 +122,12 @@ client.on(Events.InteractionCreate, async interaction => {
 
     // Execute response to command
     try {
-
+        // ensure DB has related users & guilds of this interaction
+        const { ensureData } = require("./utils/ensureData");
+        await ensureData(interaction);
         // execution
         await command.execute(interaction);
-        // database log
+        // post process of a successful Slash Command
         await Users.increaseCommandCount(interaction.user.id);
 
     } catch (error) {
