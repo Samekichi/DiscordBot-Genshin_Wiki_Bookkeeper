@@ -74,29 +74,6 @@ module.exports = (sequelize, DataTypes) => {
             return user.commandCount;
         }
 
-        // TODO: Clean up
-        // static async createUser(userId, userInstance) {
-        //     if (userId == null || userInstance == null) {
-        //         throw new Error("userId and userInstance must be specified.");
-        //     }
-        //     return await this.create({
-        //         userId: userId,
-        //         username: userInstance.username,
-        //         discriminator: userInstance.discriminator,
-        //         avatar: userInstance.displayAvatarURL(),
-        //         isBot: userInstance.bot,
-        //         commandCount: 0,
-        //     })
-        // }
-
-        // static async getOrCreateUser(userId, userInstance) {
-        //     var user = await this.findByPk(userId);
-        //     if (user == null) {
-        //         console.log("Creating new user (getOrCreateUser)");
-        //         user = await this.createUser(userId, userInstance);
-        //     }
-        //     return user;   
-        // }
         static async getOrCreateUser(userId, userInstance) {
             const [user, isNewRecord] = await this.findOrCreate({
                 where: { userId },

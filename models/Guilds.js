@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
 
             // 4. A Guild has at most 24 TitleTypes
             Guilds.hasMany(models.TitleTypes, {
-                foreignKey: "titleTypeId",
+                foreignKey: "guildId",
                 as: "titleTypes",
             })
         }

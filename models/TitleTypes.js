@@ -17,8 +17,13 @@ module.exports = (sequelize, DataTypes) => {
             })
             // 2. TitleTypes apply to many titles
             TitleTypes.hasMany(models.Titles, {
-                foreignKey: "titleId",
+                foreignKey: "titleTypeId",
                 as: "titles",
+            })
+            // 3. TitleTypes created by user
+            TitleTypes.belongsTo(models.Users, {
+                foreignKey: "createdBy",
+                as: "creator",
             })
         }
 
@@ -54,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
                 },
                 onUpdate: "CASCADE",
                 onDelete: "CASCADE",
-            },
+            },  
             name: {
                 type: DataTypes.STRING,
                 allowNull: false,
@@ -76,10 +81,10 @@ module.exports = (sequelize, DataTypes) => {
             modelName: "TitleTypes",
             tableName: "titletypes",
             timestamps: true,
-            constraints: [
+            indexes: [
                 {
                     fields: ["guildId", "name"],
-                    type: "unique",
+                    unique: true,
                     name: "unique_titletype_name_per_guild"
                 }
             ]

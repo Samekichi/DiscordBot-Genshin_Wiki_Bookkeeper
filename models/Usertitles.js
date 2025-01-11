@@ -13,41 +13,61 @@ module.exports = (sequelize, DataTypes) => {
             UserTitles.belongsTo(models.Users, {
                 foreignKey: "userId",
                 as: "owner",
-            })
+            });
 
             UserTitles.belongsTo(models.Titles, {
                 foreignKey: "titleId",
                 as: "title",
-            })
+            });
 
             UserTitles.belongsTo(models.Users, {
                 foreignKey: "grantedBy",
                 as: "grantor",
-            })
+            });
         }
 
-        static async grantTitle({ userId, titleId, grantedBy = null, isCustom = false, isSystemGrant = true, isActive = false }, options = {}) {
-            if (!userId || !titleId) {
-                throw new Error("userId and titleId must be specified to grant a Title.");
-            }
-            if (!isSystemGrant && grantedBy == null) {
-                throw new Error("grantedBy must be specified for non-system title grants.");
-            }
-            return await this.create({
+        static async grantTitle(
+            {
                 userId,
                 titleId,
-                grantedBy,
-                isSystemGrant,
-                isActive,
-            }, options);
+                grantedBy = null,
+                isSystemGrant = true,
+                isActive = false,
+            },
+            options = {}
+        ) {
+            if (!userId || !titleId) {
+                throw new Error(
+                    "userId and titleId must be specified to grant a Title."
+                );
+            }
+            if (!isSystemGrant && grantedBy == null) {
+                throw new Error(
+                    "grantedBy must be specified for non-system title grants."
+                );
+            }
+            return await this.create(
+                {
+                    userId,
+                    titleId,
+                    grantedBy,
+                    isSystemGrant,
+                    isActive,
+                },
+                options
+            );
         }
 
         // Basic UserTitle getter
-        static async getTitlesByUserId({ userId, guildId = null, isCustom = null, isSystemGrant = null, isActive = null }) {
+        static async getTitlesByUserId({
+            userId,
+            guildId = null,
+            isCustom = null,
+            isSystemGrant = null,
+            isActive = null,
+        }) {
             const whereCondition = { userId };
-            if (isCustom !== null) {
-                whereCondition.isCustom = isCustom;
-            }
+
             if (isSystemGrant !== null) {
                 whereCondition.isSystemGrant = isSystemGrant;
             }
@@ -58,6 +78,9 @@ module.exports = (sequelize, DataTypes) => {
             const titleCondition = {};
             if (guildId !== null) {
                 titleCondition.guildId = guildId;
+            }
+            if (isCustom !== null) {
+                titleCondition.isCustom = isCustom;
             }
 
             return await this.findAll({
@@ -70,21 +93,16 @@ module.exports = (sequelize, DataTypes) => {
                         required: true,
                     },
                 ],
-            })
+            });
         }
 
         static async getActiveTitlesByUserId(userId) {
-            return await this.getTitlesByUserId(userId, isActive = true);
-        }
-
-        static async getCustomTitlesByUserId(userId) {
-            return await this.getTitlesByUserId(userId, isCustom = true);
+            return await this.getTitlesByUserId(userId, (isActive = true));
         }
 
         static async getSystemGrantedTitlesByUserId(userId) {
-            return await this.getTitlesByUserId(userId, isSystemGrant = true);
+            return await this.getTitlesByUserId(userId, (isSystemGrant = true));
         }
-
     }
 
     UserTitles.init(
@@ -111,7 +129,7 @@ module.exports = (sequelize, DataTypes) => {
             },
             grantedBy: {
                 type: DataTypes.STRING,
-                allowNull: true,  // null if system grant
+                allowNull: true, // null if system grant
                 defaultValue: null,
                 references: {
                     model: "users",

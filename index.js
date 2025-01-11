@@ -1,7 +1,19 @@
 /* Create DB ORM */
 const { sequelize, Users } = require("./models");
 const isDev = process.env.NODE_ENV === "dev";
+const args = process.argv.slice(2)
+const isSyncForced = args.includes("f") || args.includes("force")
+const isSyncAltered = args.includes("a") || args.includes("alter")
 console.log("Sequelize config:", sequelize.config);
+console.log(
+    isSyncForced && isSyncAltered
+    ? "Sync is Altered and Forced"
+    : isSyncForced
+    ? "Sync is Forced"
+    : isSyncAltered
+    ? "Sync is Altered"
+    : ""
+);
 
 /* Connect DB */
 (async () => {
@@ -9,7 +21,8 @@ console.log("Sequelize config:", sequelize.config);
         // connect to database
         await sequelize.authenticate();
         console.log("Database connected!");
-    } catch (error) {
+        await sequelize.sync({force: isSyncForced, alter: isSyncAltered});
+    } catch (error) {   
         console.error("Database initialization failed:", error);
         process.exit(1);
     }

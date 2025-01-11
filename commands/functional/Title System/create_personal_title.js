@@ -19,7 +19,7 @@ module.exports = {
                 .setDescription("The description of the title.")
                 .setMaxLength(255)
                 .setRequired(false)
-        )
+        )   
         // .addStringOption(
         //     (option) =>
         //         option
@@ -54,20 +54,20 @@ module.exports = {
         }
 
         // Check para validity
-        const titleName = interaction.options.getString("title_name");
+        const name = interaction.options.getString("title_name");
         const description = interaction.options.getString("description") || null;
-        const category = interaction.options.getString("category") || "BASIC";
 
         // Create a new title atomically
+        const transaction = await sequelize.transaction();
         try {
-            const transaction = await sequelize.transaction();
-
             const title = await Titles.createTitle(
-                titleName,
-                description,
-                category,
-                userId,
-                guildId,
+                {
+                    name,
+                    description,
+                    createdBy: userId,
+                    guildId,
+                    isCustom: true,
+                }, 
                 { transaction }
             );
             await UserTitles.grantTitle(
@@ -75,7 +75,6 @@ module.exports = {
                     userId: userId,
                     titleId: title.titleId,
                     grantedBy: userId,
-                    isCustom: true,
                     isSystemGrant: false,
                     isActive: true,
                 }, 
