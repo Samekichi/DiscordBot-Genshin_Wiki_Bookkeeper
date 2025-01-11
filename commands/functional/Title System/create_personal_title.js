@@ -49,6 +49,7 @@ module.exports = {
                         ? ": " + userTitles[0].title.description
                         : ""
                     }". \nYou can only have one personalized title.`,
+                    ephemeral: true,
             });
             return;
         }
