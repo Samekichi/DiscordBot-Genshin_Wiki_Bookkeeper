@@ -1,13 +1,13 @@
 const { REST, Routes } = require('discord.js');
-const { clientId, guildId, token } = require('./config.json');
+const { clientId, token } = require('../config.json');
 const path = require('node:path');
-const { loadCommandsRecursive } = require('./utils/commandsLoader');
+const { loadCommandsRecursive } = require('./commandsLoader');
 
 
 const commands = [];
 
 /* Load all commands from the commands directory */
-const commandsFolderPath = path.join(__dirname, 'commands');
+const commandsFolderPath = path.join(__dirname, '../commands');
 const loadedCommands = loadCommandsRecursive(commandsFolderPath);
 
 for (const { command, fullPath } of loadedCommands) {
