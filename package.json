@@ -1,5 +1,5 @@
 {
-  "name": "Genshin Wiki Bookkeeper",
+  "name": "genshin_wiki_bookkeeper",
   "version": "1.0.0",
   "description": "Samekichi's first Discord Bot",
   "main": "index.js",
