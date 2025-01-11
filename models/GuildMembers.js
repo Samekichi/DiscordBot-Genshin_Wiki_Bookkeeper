@@ -29,7 +29,10 @@ module.exports = (sequelize, DataTypes) => {
             const guild = await Guilds.getOrCreateGuild(guildId, guildInstance)
             // ensure relation exists
             const [guildMember, isNewRecord] = await this.findOrCreate({
-                where: { memberId, guildId },
+                where: {
+                    userId: memberId, 
+                    guildId
+                },
                 defaults: {
                     joinDate: memberInstance.joinedAt
                 }

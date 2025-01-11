@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
                     name: guildInstance.name,
                     nameAcronym: guildInstance.nameAcronym,
                     description: guildInstance.description,
-                    icon: iconURL(),
+                    icon: guildInstance.iconURL(),
                     ownerId: guildInstance.ownerId,
                 }
             });
