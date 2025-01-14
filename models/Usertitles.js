@@ -67,7 +67,7 @@ module.exports = (sequelize, DataTypes) => {
                 isSystemGrant = null,
                 isActive = null,
             },
-            { fields = null, titleFields = null } = {}
+            { fields = undefined, titleFields = undefined } = {}
         ) {
             const whereCondition = { userId };
 
@@ -88,13 +88,13 @@ module.exports = (sequelize, DataTypes) => {
 
             return await this.findAll({
                 where: whereCondition,
-                attributes: fields || undefined,
+                attributes: fields,
                 include: [
                     {
                         model: sequelize.models.Titles,
                         as: "title",
-                        where: titleCondition,
-                        attributes: titleFields || undefined,
+                        where: titleCondition,  
+                        attributes: titleFields,
                         required: true,
                     },
                 ],
