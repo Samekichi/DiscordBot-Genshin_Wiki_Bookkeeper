@@ -67,7 +67,7 @@ for (const { command, fullPath} of loadedCommands) {
     if ('data' in command && 'execute' in command) {
         client.commands.set(command.data.name, command);
     } else {
-        console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+        console.log(`[WARNING] The command at ${fullPath} is missing a required "data" or "execute" property.`);
     }
 }
 
