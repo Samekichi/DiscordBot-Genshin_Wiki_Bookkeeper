@@ -59,13 +59,16 @@ module.exports = (sequelize, DataTypes) => {
         }
 
         // Basic UserTitle getter
-        static async getTitlesByUserId({
-            userId,
-            guildId = null,
-            isCustom = null,
-            isSystemGrant = null,
-            isActive = null,
-        }) {
+        static async getTitlesByUserId(
+            {
+                userId,
+                guildId = null,
+                isCustom = null,
+                isSystemGrant = null,
+                isActive = null,
+            },
+            { fields = null, titleFields = null } = {}
+        ) {
             const whereCondition = { userId };
 
             if (isSystemGrant !== null) {
@@ -85,11 +88,13 @@ module.exports = (sequelize, DataTypes) => {
 
             return await this.findAll({
                 where: whereCondition,
+                attributes: fields || undefined,
                 include: [
                     {
                         model: sequelize.models.Titles,
                         as: "title",
                         where: titleCondition,
+                        attributes: titleFields || undefined,
                         required: true,
                     },
                 ],

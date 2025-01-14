@@ -53,6 +53,8 @@ if (!process.env.DISCORD_TOKEN) {
     process.exit(1);
 }
 
+/* Initialize a collection to store command cooldowns per user */
+client.cooldowns = new Collection();
 
 /* Dynamically load commands */
 client.commands = new Collection();
@@ -70,9 +72,6 @@ for (const { command, fullPath} of loadedCommands) {
         console.log(`[WARNING] The command at ${fullPath} is missing a required "data" or "execute" property.`);
     }
 }
-
-/* Initialize a collection to store command cooldowns per user */
-client.cooldowns = new Collection();
 
 
 
